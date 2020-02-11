@@ -19,6 +19,13 @@ def print_cmd_if_needed(cmd, print_cmd):
         External Functions
 '''
 ''' VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV '''
+''' [======- - - - -=================- All Utilities Standard -=================- - - - -======] '''
+# to allow for relative imports
+import sys, os
+sys.path.insert(1, os.path.join(sys.path[0], os.path.dirname(os.path.abspath(__file__))))
+''' [======- - - - - - -=============- - - - -========- - - - -=============- - - - - - -======] '''
+
+
 
 # if no output, returns none
 # if outputs one line, returns string
