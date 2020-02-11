@@ -43,12 +43,10 @@ def run_cmd_popen(cmd, print_output = False, print_cmd = False, shell = False, d
     p.stdout.close()
     p.wait()
     
-    print(len(output_line_l))#````````````````````````````````````````````````````````````````````````````
     
     if len(output_line_l) == 0:
         return None
     elif len(output_line_l) == 1:
-        print('should return ', output_line_l[0])#`````````````````````````````````````````````````````````
         return output_line_l[0]
         return output_line_l[0]
     else:
