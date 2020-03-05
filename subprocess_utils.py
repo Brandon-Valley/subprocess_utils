@@ -33,7 +33,8 @@ sys.path.insert(1, os.path.join(sys.path[0], os.path.dirname(os.path.abspath(__f
 # try to use this first, if you get an error like below, try run_cmd_call()
     #     for arg in seq:
     # TypeError: 'bool' object is not iterable
-def run_cmd_popen(cmd, print_output = False, print_cmd = False, shell = False, decode = False):
+# strip will remove all leading or trailing whitespace and newlines from each line
+def run_cmd_popen(cmd, print_output = False, print_cmd = False, shell = False, decode = False, strip = False):
     print_cmd_if_needed(cmd, print_cmd)
     
     output_line_l = []
@@ -43,6 +44,9 @@ def run_cmd_popen(cmd, print_output = False, print_cmd = False, shell = False, d
         
         if decode:
             line = line.decode("utf-8") 
+            
+        if strip:
+            line = line.strip() 
         
         output_line_l.append(line)
         if print_output:
