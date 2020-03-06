@@ -34,7 +34,7 @@ sys.path.insert(1, os.path.join(sys.path[0], os.path.dirname(os.path.abspath(__f
     #     for arg in seq:
     # TypeError: 'bool' object is not iterable
 # strip will remove all leading or trailing whitespace and newlines from each line
-def run_cmd_popen(cmd, print_output = False, print_cmd = False, shell = False, decode = False, strip = False):
+def run_cmd_popen(cmd, print_output = False, print_cmd = False, shell = False, decode = False, strip = False, always_output_list = False):
     print_cmd_if_needed(cmd, print_cmd)
     
     output_line_l = []
@@ -54,14 +54,24 @@ def run_cmd_popen(cmd, print_output = False, print_cmd = False, shell = False, d
     p.stdout.close()
     p.wait()
     
-    
+    default_out = None
     if len(output_line_l) == 0:
-        return None
+        default_out = None
     elif len(output_line_l) == 1:
-        return output_line_l[0]
-        return output_line_l[0]
+        default_out = output_line_l[0]
     else:
-        return output_line_l
+        default_out = output_line_l
+        
+    if always_output_list:
+        if default_out == None:  
+            return []
+        elif isinstance(default_out, str):
+            return [default_out]
+        
+    return default_out
+    
+    
+    
 
 # try to only use this if run_cmd_popen does not work
 def run_cmd_call(cmd, print_cmd = False, shell = False):
