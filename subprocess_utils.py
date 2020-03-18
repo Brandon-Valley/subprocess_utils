@@ -70,8 +70,7 @@ def run_cmd_popen(cmd, print_output = False, print_cmd = False, shell = False, d
         with open(TEMP_FILE_PATH, "w") as temp_file:
             output_line_l = ['YOU SHOULD NEVER SEE THIS OUTSIDE OF SUBPROCESS UTILS']  
             try:
-                subprocess.check_call(cmd, stderr = temp_file)
-                p = get_popen(cmd)
+                p = subprocess.Popen(cmd, stdout = subprocess.PIPE, stderr = temp_file, bufsize = 1, shell = shell)
                 output_line_l = get_cmd_output_line_l(p)
                 # output, err = p.communicate() # DONT REMOVE, MIGHT BE USEFUL LATER
             except subprocess.CalledProcessError as e:
@@ -79,8 +78,6 @@ def run_cmd_popen(cmd, print_output = False, print_cmd = False, shell = False, d
                 pass              
         stderr_line_l = read(TEMP_FILE_PATH)
         
-#         # delete if exists
-#         if os.path.isfile(TEMP_FILE_PATH):33333333333333333333333333333333333333333333333333333333333333333333333333333333333
         os.remove(TEMP_FILE_PATH)
             
         return stderr_line_l, output_line_l
