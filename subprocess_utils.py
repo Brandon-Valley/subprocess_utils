@@ -1,10 +1,9 @@
 from __future__ import print_function
 
 import subprocess
-import sys
+import os
 
-
-TEMP_FILE_PATH = 'temp.txt'
+TEMP_FILE_PATH = os.path.dirname(os.path.abspath(__file__)) + '//temp.txt'
 
 ''' VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV '''
 '''                                                                           
@@ -79,7 +78,11 @@ def run_cmd_popen(cmd, print_output = False, print_cmd = False, shell = False, d
                 # print(e)  # DONT REMOVE, MIGHT BE USEFUL LATER
                 pass              
         stderr_line_l = read(TEMP_FILE_PATH)
+        
+#         # delete if exists
+#         if os.path.isfile(TEMP_FILE_PATH):33333333333333333333333333333333333333333333333333333333333333333333333333333333333
         os.remove(TEMP_FILE_PATH)
+            
         return stderr_line_l, output_line_l
     
     
