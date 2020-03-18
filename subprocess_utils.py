@@ -1,5 +1,10 @@
-import subprocess
+from __future__ import print_function
 
+import subprocess
+import sys
+
+
+TEMP_FILE_PATH = 'temp.txt'
 
 ''' VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV '''
 '''                                                                           
@@ -34,26 +39,71 @@ sys.path.insert(1, os.path.join(sys.path[0], os.path.dirname(os.path.abspath(__f
     #     for arg in seq:
     # TypeError: 'bool' object is not iterable
 # strip will remove all leading or trailing whitespace and newlines from each line
-def run_cmd_popen(cmd, print_output = False, print_cmd = False, shell = False, decode = False, strip = False, always_output_list = False):
+def run_cmd_popen(cmd, print_output = False, print_cmd = False, shell = False, decode = False, strip = False, always_output_list = False, return_stderr = True):
+    def get_popen(cmd):
+        return subprocess.Popen(cmd, stdout = subprocess.PIPE, bufsize = 1, shell = shell)
+    
+    def get_cmd_output_line_l(p):
+        output_line_l = []
+        
+        for line in iter(p.stdout.readline, b''):
+            
+            if decode:
+                line = line.decode("utf-8") 
+                
+            if strip:
+                line = line.strip() 
+            
+            output_line_l.append(line)
+            if print_output:
+                print (line)
+        p.stdout.close()
+        p.wait()
+        
+        return output_line_l
+    
+    
+    def get_stderr_line_l_and_output_line_l(cmd):
+        def read(filePath):
+            with open(filePath) as textFile:  # can throw FileNotFoundError
+                return list(l.rstrip() for l in textFile.readlines())
+        
+        with open(TEMP_FILE_PATH, "w") as temp_file:
+            output_line_l = ['YOU SHOULD NEVER SEE THIS OUTSIDE OF SUBPROCESS UTILS']  
+            try:
+                subprocess.check_call(cmd, stderr = temp_file)
+                p = get_popen(cmd)
+                output_line_l = get_cmd_output_line_l(p)
+                # output, err = p.communicate() # DONT REMOVE, MIGHT BE USEFUL LATER
+            except subprocess.CalledProcessError as e:
+                # print(e)  # DONT REMOVE, MIGHT BE USEFUL LATER
+                pass              
+        stderr_line_l = read(TEMP_FILE_PATH)
+        os.remove(TEMP_FILE_PATH)
+        return stderr_line_l, output_line_l
+    
+    
+    def eprint(*args, **kwargs):
+        print(*args, file=sys.stderr, **kwargs)
+    
+    
     print_cmd_if_needed(cmd, print_cmd)
     
-    output_line_l = []
-        
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, bufsize=1, shell = shell)
-    for line in iter(p.stdout.readline, b''):
-        
-        if decode:
-            line = line.decode("utf-8") 
-            
-        if strip:
-            line = line.strip() 
-        
-        output_line_l.append(line)
-        if print_output:
-            print (line)
-    p.stdout.close()
-    p.wait()
     
+    if return_stderr:
+        stderr_line_l, output_line_l = get_stderr_line_l_and_output_line_l(cmd)
+        
+        if stderr_line_l != []:
+            for line in stderr_line_l:
+                eprint(line) # prints out stderr BE CAREFUL ABOUT ADDING AN OPTION TO GET RID OF THIS, NOT HAVING ERRORS PRINT COULD MAKE DEBUGGING DIFFICULT
+            
+            output_line_l = stderr_line_l      
+        
+    else:
+        p = get_popen(cmd)
+        output_line_l = get_cmd_output_line_l(p)
+    
+
     default_out = None
     if len(output_line_l) == 0:
         default_out = None
@@ -97,10 +147,34 @@ def fatal_error(cmd):
     
     
     
-#     
-# if __name__ == "__main__":
+     
+if __name__ == "__main__":
+    import os
+
+    os.chdir('C:\\Users\\mt204e\\Documents\\projects\\Bitbucket_repo_setup\\repos\\ip_repo')
+    
+    cmd = 'git checkout d117685 -f'
+#     cmd = 'echo hi'
+    print_output = True
+    print_cmd = True
+    shell = False
+    decode = True
+    strip = True
+    always_output_list = False
+    stderr_exception = True
+    
+    out = run_cmd_popen(cmd, print_output, print_cmd, shell, decode, strip, always_output_list, stderr_exception)
+    
+    print('out:  ', out)
+    
+    
+    
+    
+    
+    
+    
 #     from submodules.git_tools import Git_Commit
-# 
+#  
 #     Git_Commit.main()
     
     
