@@ -65,7 +65,10 @@ def run_cmd_popen(cmd, print_output = False, print_cmd = False, shell = False, d
     def get_stderr_line_l_and_output_line_l(cmd):
         def read(filePath):
             with open(filePath) as textFile:  # can throw FileNotFoundError
-                return list(l.rstrip() for l in textFile.readlines())
+                out =  list(l.rstrip() for l in textFile.readlines())
+            textFile.close()
+            return out;
+            
         
         with open(TEMP_FILE_PATH, "w") as temp_file:
             output_line_l = ['YOU SHOULD NEVER SEE THIS OUTSIDE OF SUBPROCESS UTILS']  
@@ -78,7 +81,10 @@ def run_cmd_popen(cmd, print_output = False, print_cmd = False, shell = False, d
                 pass              
         stderr_line_l = read(TEMP_FILE_PATH)
         
-        os.remove(TEMP_FILE_PATH)
+        try:
+            os.remove(TEMP_FILE_PATH)
+        except PermissionError:
+            os.remove(TEMP_FILE_PATH)
             
         return stderr_line_l, output_line_l
     
