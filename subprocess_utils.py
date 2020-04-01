@@ -3,6 +3,11 @@ from __future__ import print_function
 import subprocess
 import os
 
+# -*- coding: utf-8 -*-
+import sys
+
+print (sys.stdout.encoding) # this prints Cp1252 so i want to remove it, but is it needed????????????????????????????????????????????????????????????????????????????????
+
 TEMP_FILE_PATH = os.path.dirname(os.path.abspath(__file__)) + '//temp.txt'
 
 ''' VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV '''
@@ -64,7 +69,7 @@ def run_cmd_popen(cmd, print_output = False, print_cmd = False, shell = False, d
     
     def get_stderr_line_l_and_output_line_l(cmd):
         def read(filePath):
-            with open(filePath) as textFile:  # can throw FileNotFoundError
+            with open(filePath, encoding="utf8") as textFile:  # can throw FileNotFoundError
                 out =  list(l.rstrip() for l in textFile.readlines())
             textFile.close()
             return out;
