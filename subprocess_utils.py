@@ -4,7 +4,7 @@ import subprocess
 import os
 
 
-TEMP_FILE_PATH = os.path.dirname(os.path.abspath(__file__)) + '//temp.txt'
+# TEMP_FILE_PATH = os.path.dirname(os.path.abspath(__file__)) + '//temp.txt'
 
 ''' VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV '''
 '''                                                                           
@@ -68,10 +68,29 @@ def run_cmd_popen(cmd, print_output = False, print_cmd = False, shell = False, d
             with open(filePath, encoding="utf8") as textFile:  # can throw FileNotFoundError
                 out =  list(l.rstrip() for l in textFile.readlines())
             textFile.close()
-            return out;
-            
+            return out
         
-        with open(TEMP_FILE_PATH, "w") as temp_file:
+        # need to do this to allow multiple programs to run at once, should be faster than using a semaphore
+        def make_temp_file_and_get_path():
+            temp_file_path_base = os.path.dirname(os.path.abspath(__file__)) + '//temp'
+            i = 0
+            
+            while(True):
+                temp_file_path = temp_file_path_base + str(i) + '.txt'
+                
+                if os.path.isfile(temp_file_path):
+                    i += 1
+                else:
+                    with open('myfile.txt', 'w') as fp: 
+                        pass
+                    fp.close()
+                    return temp_file_path
+                
+                
+
+        temp_file_path = make_temp_file_and_get_path()
+        
+        with open(temp_file_path, "w") as temp_file:
             output_line_l = ['YOU SHOULD NEVER SEE THIS OUTSIDE OF SUBPROCESS UTILS']  
             try:
                 p = subprocess.Popen(cmd, stdout = subprocess.PIPE, stderr = temp_file, bufsize = 1, shell = shell)
@@ -80,12 +99,13 @@ def run_cmd_popen(cmd, print_output = False, print_cmd = False, shell = False, d
             except subprocess.CalledProcessError as e:
                 # print(e)  # DONT REMOVE, MIGHT BE USEFUL LATER
                 pass              
-        stderr_line_l = read(TEMP_FILE_PATH)
+        stderr_line_l = read(temp_file_path)
         
-        try:
-            os.remove(TEMP_FILE_PATH)
-        except PermissionError:
-            os.remove(TEMP_FILE_PATH)
+        os.remove(temp_file_path)
+#         try:
+#             os.remove(temp_file_path)
+#         except PermissionError:
+#             os.remove(temp_file_path)
             
         return stderr_line_l, output_line_l
     
