@@ -2,6 +2,7 @@ from __future__ import print_function
 
 import subprocess
 import os
+import time
 
 
 # TEMP_FILE_PATH = os.path.dirname(os.path.abspath(__file__)) + '//temp.txt'
@@ -81,7 +82,7 @@ def run_cmd_popen(cmd, print_output = False, print_cmd = False, shell = False, d
                 if os.path.isfile(temp_file_path):
                     i += 1
                 else:
-                    with open('myfile.txt', 'w') as fp: 
+                    with open(temp_file_path, 'w') as fp: 
                         pass
                     fp.close()
                     return temp_file_path
@@ -101,11 +102,12 @@ def run_cmd_popen(cmd, print_output = False, print_cmd = False, shell = False, d
                 pass              
         stderr_line_l = read(temp_file_path)
         
-        os.remove(temp_file_path)
-#         try:
-#             os.remove(temp_file_path)
-#         except PermissionError:
-#             os.remove(temp_file_path)
+#         os.remove(temp_file_path)
+        try:
+            os.remove(temp_file_path)
+        except PermissionError:
+            time.sleep(1)
+            os.remove(temp_file_path)
             
         return stderr_line_l, output_line_l
     
@@ -178,9 +180,9 @@ def fatal_error(cmd):
 if __name__ == "__main__":
     import os
 
-    os.chdir('C:\\Users\\mt204e\\Documents\\projects\\Bitbucket_repo_setup\\repos\\ip_repo')
+#     os.chdir('C:\\Users\\mt204e\\Documents\\projects\\Bitbucket_repo_setup\\repos\\ip_repo')
     
-    cmd = 'git checkout d117685 -f'
+    cmd = 'tasklist'
 #     cmd = 'echo hi'
     print_output = True
     print_cmd = True
